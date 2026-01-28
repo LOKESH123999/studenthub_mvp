@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title">
+  <h1>Timetable</h1>
+  <div class="muted">Day view: <strong>{{ day_label }}</strong></div>
+</div>
+
+<div class="tabs">
+  {% for idx, label in days %}
+    <a class="tab {% if idx == day %}active{% endif %}" href="/timetable?day={{ idx }}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<section class="card">
+  <h2>Add class</h2>
+  {% if subjects|length == 0 %}
+    <p class="muted">Add subjects first in <a href="/subjects">Subjects</a>.</p>
+  {% else %}
+  <form class="form grid-5" method="post" action="/timetable/add">
+    <div>
+      <label>Subject</label>
+      <select name="subject_id" required>
+        {% for s in subjects %}
+          <option value="{{ s.id }}">{{ s.code }} {{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Day</label>
+      <select name="day_of_week" required>
+        {% for idx, label in days %}
+          <option value="{{ idx }}" {% if idx == day %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Start</label>
+      <input name="start_time" type="time" required/>
+    </div>
+    <div>
+      <label>End</label>
+      <input name="end_time" type="time" required/>
+    </div>
+    <div>
+      <label>Location</label>
+      <input name="location" placeholder="Room/Lab"/>
+    </div>
+    <div class="full">
+      <button class="btn" type="submit">Add class</button>
+    </div>
+  </form>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Classes on {{ day_label }}</h2>
+  {% if entries|length == 0 %}
+    <p class="muted">No classes added for this day.</p>
+  {% else %}
+    <table class="table">
+      <thead><tr><th>Time</th><th>Subject</th><th>Location</th><th></th></tr></thead>
+      <tbody>
+      {% for e in entries %}
+        <tr>
+          <td class="mono">{{ e.start_time }}–{{ e.end_time }}</td>
+          <td>{{ e.subject_code }} {{ e.subject_name }}</td>
+          <td>{{ e.location or "" }}</td>
+          <td>
+            <form method="post" action="/timetable/delete" onsubmit="return confirm('Delete this class entry?');">
+              <input type="hidden" name="entry_id" value="{{ e.id }}"/>
+              <input type="hidden" name="day" value="{{ day }}"/>
+              <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title">
+  <h1>Tasks</h1>
+  <div class="muted">Assignments, lab work, exam prep — everything in one list.</div>
+</div>
+
+<div class="tabs">
+  <a class="tab {% if show == 'todo' %}active{% endif %}" href="/tasks?show=todo">Todo</a>
+  <a class="tab {% if show == 'done' %}active{% endif %}" href="/tasks?show=done">Done</a>
+  <a class="tab {% if show == 'all' %}active{% endif %}" href="/tasks?show=all">All</a>
+</div>
+
+<section class="card">
+  <h2>Add task</h2>
+  <form class="form grid-4" method="post" action="/tasks/add">
+    <div>
+      <label>Title</label>
+      <input name="title" required placeholder="Write DBMS assignment #3"/>
+    </div>
+    <div>
+      <label>Subject (optional)</label>
+      <select name="subject_id">
+        <option value="">—</option>
+        {% for s in subjects %}
+          <option value="{{ s.id }}">{{ s.code }} {{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Due (optional)</label>
+      <input name="due_at" type="date" value=""/>
+      <div class="hint muted">Use date; or type full ISO datetime.</div>
+    </div>
+    <div>
+      <label>Priority</label>
+      <select name="priority">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <div class="full">
+      <button class="btn" type="submit">Add task</button>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>List</h2>
+  {% if tasks|length == 0 %}
+    <p class="muted">No tasks to show.</p>
+  {% else %}
+    <table class="table">
+      <thead><tr><th>Title</th><th>Subject</th><th>Due</th><th>Priority</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for t in tasks %}
+        <tr>
+          <td>{{ t.title }}</td>
+          <td class="muted">{{ (t.subject_code ~ " " ~ t.subject_name) if t.subject_name else "" }}</td>
+          <td class="mono">{{ t.due_at or "" }}</td>
+          <td><span class="pill pill-{{ t.priority }}">{{ t.priority }}</span></td>
+          <td class="mono">{{ t.status }}</td>
+          <td class="actions">
+            <form method="post" action="/tasks/toggle">
+              <input type="hidden" name="task_id" value="{{ t.id }}"/>
+              <input type="hidden" name="show" value="{{ show }}"/>
+              {% if t.status == "todo" %}
+                <input type="hidden" name="next_status" value="done"/>
+                <button class="btn btn-ok" type="submit">Done</button>
+              {% else %}
+                <input type="hidden" name="next_status" value="todo"/>
+                <button class="btn btn-ghost" type="submit">Undo</button>
+              {% endif %}
+            </form>
+            <form method="post" action="/tasks/delete" onsubmit="return confirm('Delete task?');">
+              <input type="hidden" name="task_id" value="{{ t.id }}"/>
+              <input type="hidden" name="show" value="{{ show }}"/>
+              <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>
+{% endblock %}

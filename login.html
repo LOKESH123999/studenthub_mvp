@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card auth-card">
+  <h1>Login</h1>
+  <p class="muted">Access your dashboard.</p>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  <form method="post" action="/login" class="form">
+    <label>Email</label>
+    <input type="email" name="email" required placeholder="you@college.edu"/>
+
+    <label>Password</label>
+    <input type="password" name="password" required placeholder="••••••••"/>
+
+    <button class="btn" type="submit">Login</button>
+  </form>
+  <p class="muted">New here? <a href="/register">Create an account</a></p>
+</div>
+{% endblock %}

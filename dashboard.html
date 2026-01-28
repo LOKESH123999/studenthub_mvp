@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title">
+  <h1>Dashboard</h1>
+  <div class="muted">{{ weekday }}, {{ today }}</div>
+</div>
+
+<div class="grid">
+  <section class="card">
+    <h2>Today's classes</h2>
+    {% if classes|length == 0 %}
+      <p class="muted">No classes found for today. Add them in <a href="/timetable">Timetable</a>.</p>
+    {% else %}
+      <ul class="list">
+      {% for c in classes %}
+        <li class="list-item">
+          <div>
+            <div><strong>{{ c.subject_code }} {{ c.subject_name }}</strong></div>
+            <div class="muted">{{ c.start_time }}–{{ c.end_time }}{% if c.location %} • {{ c.location }}{% endif %}</div>
+          </div>
+        </li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>Upcoming tasks (7 days)</h2>
+    {% if tasks|length == 0 %}
+      <p class="muted">No urgent tasks. Add one in <a href="/tasks">Tasks</a>.</p>
+    {% else %}
+      <ul class="list">
+      {% for t in tasks %}
+        <li class="list-item">
+          <div>
+            <div><strong>{{ t.title }}</strong></div>
+            <div class="muted">
+              {% if t.subject_name %}{{ t.subject_name }} • {% endif %}
+              Priority: {{ t.priority|capitalize }}
+              {% if t.due_at %} • Due: {{ t.due_at }}{% endif %}
+            </div>
+          </div>
+          <div class="pill pill-{{ t.priority }}">{{ t.priority }}</div>
+        </li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <h2>Attendance summary</h2>
+  {% if attendance|length == 0 %}
+    <p class="muted">Add subjects in <a href="/subjects">Subjects</a>, then mark attendance.</p>
+  {% else %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Present/Total</th>
+          <th>%</th>
+          <th>Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in attendance %}
+        <tr>
+          <td>{{ a.subject_code }} {{ a.subject_name }}</td>
+          <td>{{ a.present_classes }}/{{ a.total_classes }}</td>
+          <td>
+            <span class="mono">{{ a.percentage }}%</span>
+            {% if a.total_classes > 0 and a.percentage < a.target_attendance %}
+              <span class="pill pill-warn">below target</span>
+            {% endif %}
+          </td>
+          <td>{{ a.target_attendance }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>
+{% endblock %}

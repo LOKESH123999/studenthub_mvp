@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{{ title if title else "BTech Buddy" }}</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <a href="/dashboard">BTech Buddy</a>
+      <span class="muted">CSE Student Automation</span>
+    </div>
+    {% if user %}
+    <nav class="nav">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/subjects">Subjects</a>
+      <a href="/timetable">Timetable</a>
+      <a href="/attendance">Attendance</a>
+      <a href="/tasks">Tasks</a>
+      <a href="/resources">Resources</a>
+      <a href="/coding">Coding</a>
+    </nav>
+    <div class="userbox">
+      <div class="small">
+        <div class="muted">Signed in</div>
+        <div><strong>{{ user.name }}</strong></div>
+      </div>
+      <form method="post" action="/logout">
+        <button class="btn btn-ghost" type="submit">Logout</button>
+      </form>
+    </div>
+    {% endif %}
+  </header>
+
+  <main class="container">
+    {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success">{{ success }}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="muted">Local MVP • SQLite • FastAPI</div>
+  </footer>
+</body>
+</html>

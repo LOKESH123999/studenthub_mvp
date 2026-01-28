@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card auth-card">
+  <h1>Create account</h1>
+  <p class="muted">One account per device/server.</p>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  <form method="post" action="/register" class="form">
+    <label>Name</label>
+    <input type="text" name="name" required placeholder="Your name"/>
+
+    <label>Email</label>
+    <input type="email" name="email" required placeholder="you@college.edu"/>
+
+    <label>Password</label>
+    <input type="password" name="password" required placeholder="Min 6 chars"/>
+
+    <button class="btn" type="submit">Register</button>
+  </form>
+  <p class="muted">Already have an account? <a href="/login">Login</a></p>
+</div>
+{% endblock %}

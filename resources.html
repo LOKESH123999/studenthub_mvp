@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title">
+  <h1>Resources</h1>
+  <div class="muted">Save notes, playlist links, PDFs, GitHub repos, etc.</div>
+</div>
+
+<section class="card">
+  <h2>Add resource</h2>
+  <form class="form grid-4" method="post" action="/resources/add">
+    <div>
+      <label>Title</label>
+      <input name="title" required placeholder="CN - OSI model notes"/>
+    </div>
+    <div>
+      <label>URL</label>
+      <input name="url" required placeholder="https://..."/>
+    </div>
+    <div>
+      <label>Subject (optional)</label>
+      <select name="subject_id">
+        <option value="">—</option>
+        {% for s in subjects %}
+          <option value="{{ s.id }}">{{ s.code }} {{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Tags (comma separated)</label>
+      <input name="tags" placeholder="notes, pdf, exam"/>
+    </div>
+    <div class="full">
+      <button class="btn" type="submit">Save</button>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Saved</h2>
+  {% if resources|length == 0 %}
+    <p class="muted">No resources saved yet.</p>
+  {% else %}
+    <table class="table">
+      <thead><tr><th>Title</th><th>Subject</th><th>Tags</th><th>Link</th><th></th></tr></thead>
+      <tbody>
+      {% for r in resources %}
+        <tr>
+          <td>{{ r.title }}</td>
+          <td class="muted">{{ (r.subject_code ~ " " ~ r.subject_name) if r.subject_name else "" }}</td>
+          <td class="muted">{{ r.tags or "" }}</td>
+          <td><a href="{{ r.url }}" target="_blank" rel="noreferrer">Open</a></td>
+          <td>
+            <form method="post" action="/resources/delete" onsubmit="return confirm('Delete resource?');">
+              <input type="hidden" name="resource_id" value="{{ r.id }}"/>
+              <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>
+{% endblock %}
